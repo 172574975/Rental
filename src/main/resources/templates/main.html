@@ -1,0 +1,287 @@
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>大厅（信息展示）</title>
+    <!--mobile apps-->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="keywords" content="Rental Responsive web template, Bootstrap Web Templates, Flat Web Templates, Android Compatible web template,
+	Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, SonyEricsson, Motorola web design"/>
+    <script type="application/x-javascript"> addEventListener("load", function () {
+        setTimeout(hideURLbar, 0);
+    }, false);
+
+    function hideURLbar() {
+        window.scrollTo(0, 1);
+    } </script>
+    <!--mobile apps-->
+    <!--Custom Theme files -->
+    <link th:href="@{/css/bootstrap.css}" type="text/css" rel="stylesheet" media="all">
+    <link th:href="@{/css/style.css}" type="text/css" rel="stylesheet" media="all">
+
+    <link rel="stylesheet" th:href="@{/css/prettySticky.css}" type="text/css">
+    <link rel="stylesheet" th:href="@{/css/flexslider.css}" type="text/css" media="screen"/>
+
+
+    <!-- //Custom Theme files -->
+    <!-- js -->
+    <script th:src="@{/js/jquery-1.11.1.min.js}"></script>
+    <!-- //js -->
+    <!-- start-smoth-scrolling-->
+    <script type="text/javascript">
+        jQuery(document).ready(function ($) {
+            $(".scroll").click(function (event) {
+                event.preventDefault();
+                $('html,body').animate({scrollTop: $(this.hash).offset().top}, 1000);
+            });
+            $(".f-nav li").click(function () {
+                $(this).attr("class", "intiact");
+                $(this).siblings().attr("class", "noact");
+            })
+
+
+
+
+            //初始化就会执行的方法，初始化一开始的页面信息
+            window.onload=function setpage(){
+                var page = 1;
+                var houseurl = "/newhouse";
+                var pageurl = "/turnpage";
+                checkHouse(page,houseurl);//查询房源信息
+                turnPage(page,pageurl);//分页
+            }
+
+            //用ul的id来保存请求路径
+            $(".f-nav li").on("click",function (obj) {
+                if($(this).index()==0){
+                    $(".f-nav").attr('id','/newhouse');
+                    $(".cpage").attr("id","/turnpage");
+                    checkHouse(1,"/newhouse");
+                    turnPage(1,"/turnpage");
+                }else if($(this).index()==1){
+                    $(".f-nav").attr('id','/perhouse');
+                    $(".cpage").attr("id","/turnpage2");
+                    checkHouse(1,"/perhouse");
+                    turnPage(1,"/turnpage2");
+                }else if($(this).index()==2){
+                    $(".f-nav").attr('id','/allhouse');
+                    $(".cpage").attr("id","/turnpage3");
+                    checkHouse(1,"/allhouse");
+                    turnPage(1,"/turnpage3");
+                }
+            })
+
+            //刷新房源信息
+            function checkHouse(page,houseurl)
+            {
+                $.ajax({
+                    type: "post",
+                    url: houseurl,    //向后端请求数据的url
+                    data: {
+                        startpage:page,
+                        pagesize:6
+                    },
+                    success: function (data) {
+                       if (data[0]==null){
+                           alert("登录后才能查看");
+                           $(".mainlist").html("");
+
+                       } else{
+                           console.log(data);
+                           var html = "";
+                           for (var i=0;i<data.length;i++){
+                               html += "<div class='listitem col-md-3' id='" +data[i].houseId+
+                                   " '><a href='/housedetail?id="+data[i].houseId+"' target='_blank' title='点击了解' alt='点击了解'>" +
+                                   "<img src='.."+data[i].housePic+"' class='listimg'>\n" +
+                                   "</a>" +
+                                   "<div class='item_mes'>" +
+                                   "<span class='glyphicon glyphicon-th-large'></span>"+data[i].houseName+"</div>\n" +
+                                   "<div class='item_mes'>\n" +
+                                   " <span class='glyphicon glyphicon-globe'></span>"+data[i].houseAdder
+                                   +" </div>\n" +
+                                   " <div class='item_mes'>\n" +
+                                   " <span class='glyphicon glyphicon-usd'></span>"+data[i].pirce
+                                   +"￥/月\n" +
+                                   "</div>\t\n" +
+                                   "</div>"
+                           }
+                           $(".mainlist").html(html);
+                       }
+                    }
+                });
+            }
+            //控制翻页按钮和页码显示
+            function turnPage(page,pageurl) {
+                $.ajax({
+                    type: "post",
+                    url: pageurl,    //向后端请求数据的url
+                    data: {
+                        startpage:page,
+                        pagesize:6
+                    },
+                    success: function (data) {
+                        var html = "";
+                        html += "<p>当前<span class='nowpage'>"+data[0]+"</span>页/共<span class='tolpage'>"+data[1]+"</span>页</p>";
+                        $(".cpage p").html(html);
+                    }
+                });
+            }
+
+            //上一页按钮
+            $(".prepage").on("click",function () {
+                var nowpage = parseInt($(".nowpage").html());
+                if (nowpage==1){
+                    alert("已经在首页");
+                } else {
+                    var requrl = $(".cpage").attr("id");
+                    var pageurl = $(".f-nav").attr("id");
+                    checkHouse(nowpage-1,pageurl);
+                    turnPage(nowpage-1,requrl);
+                }
+            })
+            //下一页按钮
+            $(".nextpage").on("click",function () {
+                var nowpage = parseInt($(".nowpage").html());
+                var tolpage = parseInt($(".tolpage").html());
+                if (nowpage==tolpage){
+                    alert("已经到底了");
+                }else{
+                    var requrl = $(".cpage").attr("id");
+                    var pageurl = $(".f-nav").attr("id");
+                    checkHouse(nowpage+1,pageurl);
+                    turnPage(nowpage+1,requrl);
+                }
+            })
+
+
+        });
+    </script>
+    <!--//end-smoth-scrolling-->
+</head>
+<body>
+<div th:insert="~{commons/commons::topbar(flag='main')}"></div>
+
+<!--about-->
+<div class="about">
+
+    <div class="container">
+        <br>
+
+        <ul class="f-nav col-md-12" id="/newhouse">
+            <li class="intiact" id="newhouse">最新上架</li>
+            <li class="noact" id="perhouse">专属推荐</li>
+            <li class="noact" id="allhouse">所有房源</li>
+            <li class="noact">浏览记录</li>
+            <li class="noact">更多功能</li>
+        </ul>
+
+        <br><br>
+        <br><br>
+        <div class="col-md-12" style="background-color: ghostwhite;height: 50px;font-family: 宋体; border-radius: 20px;">
+            <span class="glyphicon glyphicon-th-list"></span>
+            <p class="title" style="font-size: 20px;color: rgb(116,94,197);display: inline-block;">热推户型</p>
+        </div>
+
+        <!--tabs-->
+        <div class="tabs main_tab" style="background-color: white; height: 400px;">
+            <div class="container">
+                <div class="col-md-12 tabs-left">
+                    <div class="col-xs-2 tab-grid-left" style="width: 9%;"> <!-- required for floating -->
+                        <!-- Nav tabs -->
+                        <ul class="nav nav-tabs">
+                            <li class="active"><a href="#Tab1" data-toggle="tab">No.1</a></li>
+                            <li><a href="#Tab2" data-toggle="tab">No.2</a></li>
+                            <li><a href="#Tab3" data-toggle="tab">No.3</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-xs-10 tab-grid-right" style="width: 90%;">
+                        <!-- Tab panes -->
+                        <div class="tab-content">
+                            <div class="tab-pane active" id="Tab1">
+                                <div class="text" style="float: left; display: inline-block;width: 508px; ">
+                                    <h4 class="title" >**[[${hot0.houseName}]]**</h4>
+                                    <p>位置：<span th:text="${hot0.houseAdder}"></span></p>
+                                    <p>价格：<span th:text="${hot0.pirce}"></span>￥/月</p>
+                                    <p class="del">简介：<span th:text="${hot0.details}"></span></p>
+                                    <div class="more more2">
+                                        <a th:href="@{/housedetail(id=${hot0.houseId})}" class="button-pipaluk button--inverted" target="_blank"> 了解更多</a>
+                                    </div>
+                                </div>
+                                <div class="col-md-6  " style="float: right; display: inline-block;width: 400px; overflow: hidden;">
+<!--                                    <img th:src="@{/images/img1.jpg}" alt="" style=" width: 400px;float: right;"/>-->
+                                    <img th:src="@{${hot0.housePic}}" alt="" style=" width: 300px;float: right;"/>
+                                </div>
+                            </div>
+                            <div class="tab-pane" id="Tab2">
+                                <div class="text" style="float: left; display: inline-block;width: 508px; ">
+                                    <h4 class="title">**[[${hot1.houseName}]]**</h4>
+                                    <p>位置：<span th:text="${hot1.houseAdder}"></span></p>
+                                    <p>价格：<span th:text="${hot1.pirce}"></span>￥/月</p>
+                                    <p class="del">简介：<span th:text="${hot1.details}"></span></p>
+                                    <div class="more more2">
+                                        <a th:href="@{/housedetail(id=${hot1.houseId})}" class="button-pipaluk button--inverted"> 了解更多</a>
+                                    </div>
+                                </div>
+                                <div class="col-md-6  " style="float: right; display: inline-block;width: 400px;overflow: hidden;">
+                                    <img th:src="@{${hot1.housePic}}" alt="" style=" width: 300px;float: right;"/>
+                                </div>
+                            </div>
+                            <div class="tab-pane" id="Tab3">
+                                <div class="text" style="float: left; display: inline-block;width: 508px; ">
+                                    <h4 class="title">**[[${hot2.houseName}]]**</h4>
+                                    <p>位置：<span th:text="${hot2.houseAdder}"></span></p>
+                                    <p>价格：<span th:text="${hot2.pirce}"></span>￥/月</p>
+                                    <p class="del">简介：<span th:text="${hot2.details}"></span></p>
+                                    <div class="more more2">
+                                        <a th:href="@{/housedetail(id=${hot2.houseId})}" class="button-pipaluk button--inverted"> 了解更多</a>
+                                    </div>
+                                </div>
+                                <div class="col-md-6  " style="float: right; display: inline-block;width: 400px;">
+                                    <img th:src="@{${hot2.housePic}}" alt="" style=" width: 400px;float: right;"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+
+                <div class="clearfix"></div>
+            </div>
+        </div>
+        <!--//tabs-->
+
+        <!--	列表展示-->
+        <div class="col-md-12 mainlist">
+
+
+        </div>
+        <!--            翻页按钮-->
+        <div class="col-md-12 cpage" id="/turnpage">
+            <button class="btn btn-default prepage" style="line-height: 50px;" ><a>上一页</a></button>
+            <p style="display: inline-block;"></p>
+            <button class="btn btn-default nextpage" style="line-height: 50px;"><a>下一页</a></button>
+        </div>
+
+    </div>
+</div>
+<!--//about-->
+
+
+<!--team-->
+
+<!--//team-->
+<!--footer-->
+<div th:insert="~{commons/commons::footer}"></div>
+
+<!--//footer-->
+<!-- script-for prettySticky -->
+<script th:src="@{/js/prettySticky.js}"></script>
+<!--//script-for prettySticky -->
+<!-- Bootstrap core JavaScript
+================================================== -->
+<!-- Placed at the end of the document so the pages load faster -->
+<script th:src="@{/js/bootstrap.js}"></script>
+
+</body>
+</html>

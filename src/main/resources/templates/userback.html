@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<title>用户意见反馈</title>
+<!--mobile apps-->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="keywords" content="Rental Responsive web template, Bootstrap Web Templates, Flat Web Templates, Android Compatible web template, 
+	Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, SonyEricsson, Motorola web design" />
+<script type="application/x-javascript"> addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false); function hideURLbar(){ window.scrollTo(0,1); } </script>
+<!--mobile apps-->
+<!--Custom Theme files -->
+<link th:href="@{/css/bootstrap.css}" type="text/css" rel="stylesheet" media="all">
+<link th:href="@{/css/style.css}" type="text/css" rel="stylesheet" media="all">
+<link rel="stylesheet" th:href="@{/css/prettySticky.css}" type="text/css">
+<link rel="stylesheet" th:href="@{/css/lightbox.css}">
+<!-- //Custom Theme files -->
+<!-- js -->
+<script th:src="@{/js/jquery-1.11.1.min.js}"></script>
+<!-- //js -->
+<!-- start-smoth-scrolling-->
+<script type="text/javascript">
+		jQuery(document).ready(function($) {
+			$(".scroll").click(function(event){		
+				event.preventDefault();
+		
+			$('html,body').animate({scrollTop:$(this.hash).offset().top},1000);
+			});
+
+			$("#comid").on("click",function () {
+				var str = $("#comtext").val();
+				if (str.length == 0){
+					alert("请填写内容")
+				} else{
+					$.ajax({
+						type: "post",
+						url: "/complain",    //意见反馈提交
+						data: {
+							complaintext:str
+						},
+						success: function (data) {
+							if (data==0){
+								alert("登录后才能继续操作");
+							} else{
+								alert("提交成功，感谢您的反馈");
+								$("#comtext").html("");
+							}
+						}
+					});
+				}
+
+			})
+
+		});
+</script>
+<!--//end-smoth-scrolling-->
+</head>
+<body>
+
+	<div th:insert="~{commons/commons::topbar(flag='userback')}"></div>
+
+	<!--gallery-->
+	<div class="contact">
+		<div class="container">
+			<div class="contact-grids">
+				<div class="col-md-6 contact-grid" >
+					<img th:src="@{/images/login.jpg}" alt="">
+				</div>
+				<div class="col-md-6 contact-grid">
+					<h3 class="title">用户反馈</h3>
+					<p>请填写您的反馈意见并提交，我们会及时处理</p>
+					<form>
+<!--						<input type="text" value="Name" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'Name';}" required="">-->
+<!--						<input type="text" class="input-mdl" value="Email" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'Email';}" required="">-->
+<!--						<input type="text" value="Telephone" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'Telephone';}" required="">-->
+						<textarea id="comtext" style="height: 300px;" type="text"  placeholder="点击开始输入..." required=""></textarea>
+						<input type="submit" value="提交反馈" id="comid">
+					</form>
+				</div>
+				<div class="clearfix"> </div>
+			</div>
+			<div class="address">
+				<ul>
+					<li><i class="glyphicon glyphicon-map-marker" aria-hidden="true"></i>123 Fourth Avenue,SEATTLE WA 98104,USA</li>
+					<li><i class="phon">CALL US :</i> +0955 670 204</li>
+					<li><i class="glyphicon glyphicon-envelope" aria-hidden="true"></i><a href="mailto:info@example.com"> mail@example.com</a></li>
+				</ul>
+			</div>
+
+		</div>
+	</div>
+
+	<!--//gallery-->
+	<!--footer-->
+	<div th:insert="~{commons/commons::footer}"></div>
+
+	<!--//footer-->
+	<!-- script-for prettySticky -->
+	<script th:src="@{/js/prettySticky.js}"></script>
+	<!--//script-for prettySticky -->
+	<!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script th:src="@{/js/bootstrap.js}"></script>
+</body>
+</html>
